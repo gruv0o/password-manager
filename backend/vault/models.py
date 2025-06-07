@@ -33,7 +33,12 @@ class PasswordEntry(models.Model):
         key = settings.VAULT_KEY.encode()
         f = Fernet(key)
         try:
-            raw = f.decrypt(self.encrypted_password)
+            token = self.encrypted_password
+            if isinstance(token, memoryview):
+                token = token.tobytes()
+            if isinstance(token, str):
+                token = token.encode()
+            raw = f.decrypt(token)
             return raw.decode()
         except InvalidToken:
             return ""  # ou lever une exception, selon votre besoin

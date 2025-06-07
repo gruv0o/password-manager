@@ -19,7 +19,7 @@ class PasswordEntrySerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at", "decrypted_password"]
+        read_only_fields = ["id", "created_at", "updated_at"]
 
     def create(self, validated_data):
         user = self.context["request"].user

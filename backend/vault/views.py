@@ -25,8 +25,3 @@ class PasswordEntryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Ne retourne que les entrées appartenant à l’utilisateur connecté
         return PasswordEntry.objects.filter(owner=self.request.user)
-
-    def perform_create(self, serializer):
-        # créer en attribuant owner = request.user (déjà géré dans le serializer,
-        # mais on peut le reforcer ici aussi si besoin)
-        serializer.save(owner=self.request.user)
