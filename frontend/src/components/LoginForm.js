@@ -1,7 +1,7 @@
 // frontend/src/components/LoginForm.js
 import React, { useState } from "react";
-import { api } from "../api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import {
     TextField,
     Button,
@@ -12,31 +12,35 @@ import {
 } from "@mui/material";
 
 export default function LoginForm({ onLogin }) {
-
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
+        setLoading(true);
 
         console.log("SENDING LOGIN:", { username, password });
 
         try {
-            const res = await api.post("accounts/login/", { username, password });
-            console.log("LOGIN RESPONSE:", res.data);
-            // Stocker dans localStorage
-            localStorage.setItem("access_token", res.data.access);
-            localStorage.setItem("refresh_token", res.data.refresh);
+            await login(username, password);
+
             if (typeof onLogin === "function") {
                 onLogin();
             }
+
             // Redirection vers la liste du vault
             navigate("/vault");
         } catch (err) {
+            console.error("Erreur de connexion:", err);
             setError("Identifiants invalides");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -53,6 +57,7 @@ export default function LoginForm({ onLogin }) {
                     margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
                 />
                 <TextField
                     label="Mot de passe"
@@ -61,9 +66,16 @@ export default function LoginForm({ onLogin }) {
                     margin="normal"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 />
-                <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-                    Se connecter
+                <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    disabled={loading}
+                >
+                    {loading ? "Connexion..." : "Se connecter"}
                 </Button>
             </Box>
         </Container>

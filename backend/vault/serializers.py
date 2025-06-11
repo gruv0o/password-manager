@@ -3,7 +3,6 @@ from rest_framework import serializers
 from .models import PasswordEntry
 
 class PasswordEntrySerializer(serializers.ModelSerializer):
-    # On expose un champ "password" en clair dans l’API, qui sera chiffré en interne
     password = serializers.CharField(write_only=True, required=True)
     decrypted_password = serializers.SerializerMethodField(read_only=True)
 
@@ -13,8 +12,8 @@ class PasswordEntrySerializer(serializers.ModelSerializer):
             "id",
             "name",
             "login",
-            "password",           # utilisé à la création ou modification
-            "decrypted_password", # renvoyé en lecture
+            "password",
+            "decrypted_password",
             "notes",
             "created_at",
             "updated_at",
@@ -30,7 +29,6 @@ class PasswordEntrySerializer(serializers.ModelSerializer):
         return entry
 
     def update(self, instance, validated_data):
-        # Si l’utilisateur fournit un nouveau "password", on le chiffre
         new_pwd = validated_data.pop("password", None)
         for attr, val in validated_data.items():
             setattr(instance, attr, val)

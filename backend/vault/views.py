@@ -4,10 +4,6 @@ from .models import PasswordEntry
 from .serializers import PasswordEntrySerializer
 
 class IsOwner(permissions.BasePermission):
-    """
-    Permission personnalisée : l’utilisateur ne peut accéder qu’à ses propres entrées.
-    """
-
     def has_object_permission(self, request, view, obj):
         return obj.owner == request.user
 

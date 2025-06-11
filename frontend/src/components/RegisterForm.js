@@ -27,12 +27,15 @@ export default function RegisterForm() {
             setSuccess("Inscription réussie ! Vous êtes maintenant connecté.");
             // Vous pouvez rediriger vers une autre page (par ex. le vault) si désiré
         } catch (err) {
-            // L’API renvoie un objet JSON avec les erreurs
-            setError(
-                err.response?.data?.username
-                    ? err.response.data.username
-                    : "Erreur lors de l’inscription"
-            );
+            console.error("Erreur RegisterForm:", err.response?.data || err);
+        if (err.response?.data) {
+            const messages = Object.entries(err.response.data)
+                .map(([field, msgs]) => `${field}: ${msgs.join(" ")}`)
+                .join(" | ");
+            setError(messages);
+        } else {
+            setError("Erreur lors de l’inscription");
+        }
         }
     };
 
